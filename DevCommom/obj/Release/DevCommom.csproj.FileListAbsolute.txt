@@ -1,0 +1,10 @@
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\DevCommom.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\DevCommom.pdb
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\LeagueSharp.Common.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\LeagueSharp.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\SharpDX.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\bin\Release\LeagueSharp.xml
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\obj\Release\DevCommom.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\obj\Release\DevCommom.dll
+C:\Users\Administrator\AppData\Roaming\LeagueSharp\Repositories\FF5A0427\trunk\DevCommom\obj\Release\DevCommom.pdb
