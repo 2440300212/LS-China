@@ -191,7 +191,7 @@ namespace Syndra
             Drawing.OnDraw += Drawing_OnDraw;
             Interrupter.OnPossibleToInterrupt += Interrupter_OnPossibleToInterrupt;
             Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
-            Game.PrintChat(ChampionName + " Loaded!");
+            Game.PrintChat(ChampionName + " Loaded");
         }
 
         static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)

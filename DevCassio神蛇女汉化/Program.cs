@@ -520,7 +520,7 @@ namespace DevCassio
         static void AssemblyUtil_onGetVersionCompleted(OnGetVersionCompletedArgs args)
         {
             if (args.LastAssemblyVersion == Assembly.GetExecutingAssembly().GetName().Version.ToString())
-                Game.PrintChat(string.Format("<font color='#fb762d'>Dev铔囧コ鏈€寰岀増鏈.</font>"));
+                Game.PrintChat(string.Format("<font color='#fb762d'>Dev铔囧コ鏈€寰岀増鏈</font>"));
             else
                 Game.PrintChat(string.Format("<font color='#fb762d'>DevCassio NEW VERSION available! Tap F8 for Update! {0}</font>", args.LastAssemblyVersion));
         }
