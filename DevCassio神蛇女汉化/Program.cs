@@ -24,6 +24,7 @@ using SharpDX;
  * + Jungle Clear
  * + R to Save Yourself, when MinHealth and Enemy IsFacing
  * + Auto Spell Level UP
+ * + Play Legit Menu :)
  * 
 */
 
@@ -50,6 +51,7 @@ namespace DevCassio
         private static DateTime dtBurstComboStart = DateTime.MinValue;
         private static DateTime dtLastQCast = DateTime.MinValue;
         private static DateTime dtLastSaveYourself = DateTime.Now;
+        private static DateTime dtLastECast = DateTime.MinValue;
        
         public static bool mustDebug = false;
 
@@ -82,6 +84,8 @@ namespace DevCassio
                         break;
                 }
 
+                if (Config.Item("HarassToggle").GetValue<KeyBind>().Active)
+                    Harass();
                 
                 UseUltUnderTower();
 
@@ -220,7 +224,7 @@ namespace DevCassio
 
                 if ((eTarget.HasBuffOfType(BuffType.Poison) && buffEndTime > (Game.Time + E.Delay)) || Player.GetSpellDamage(eTarget, SpellSlot.E) > eTarget.Health)
                 {
-                    E.CastOnUnit(eTarget, packetCast);
+                    CastE(eTarget);
                 }
             }
 
@@ -274,7 +278,7 @@ namespace DevCassio
             {
                 if (eTarget.HasBuffOfType(BuffType.Poison) || Player.GetSpellDamage(eTarget, SpellSlot.E) > eTarget.Health)
                 {
-                    E.CastOnUnit(eTarget, packetCast);
+                    CastE(eTarget);
                 }
             }
 
@@ -317,7 +321,7 @@ namespace DevCassio
                 var allMinionsQ = MinionManager.GetMinions(Player.Position, Q.Range + Q.Width, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health).ToList();
                 var allMinionsQNonPoisoned = allMinionsQ.Where(x => !x.HasBuffOfType(BuffType.Poison)).ToList();
 
-                if (allMinionsQNonPoisoned.Count > 0)
+                if (allMinionsQNonPoisoned.Any())
                 {
                     var farmNonPoisoned = Q.GetCircularFarmLocation(allMinionsQNonPoisoned, Q.Width * 0.8f);
                     if (farmNonPoisoned.MinionsHit >= 3)
@@ -328,7 +332,7 @@ namespace DevCassio
                     }
                 }
 
-                if (allMinionsQ.Count > 0)
+                if (allMinionsQ.Any())
                 {
                     var farmAll = Q.GetCircularFarmLocation(allMinionsQ, Q.Width * 0.8f);
                     if (farmAll.MinionsHit >= 2 || allMinionsQ.Count == 1)
@@ -345,7 +349,7 @@ namespace DevCassio
                 var allMinionsW = MinionManager.GetMinions(Player.ServerPosition, W.Range + W.Width, MinionTypes.All).ToList();
                 var allMinionsWNonPoisoned = allMinionsW.Where(x => !x.HasBuffOfType(BuffType.Poison)).ToList();
 
-                if (allMinionsWNonPoisoned.Count > 0)
+                if (allMinionsWNonPoisoned.Any())
                 {
                     var farmNonPoisoned = W.GetCircularFarmLocation(allMinionsWNonPoisoned, W.Width * 0.8f);
                     if (farmNonPoisoned.MinionsHit >= 3)
@@ -355,7 +359,7 @@ namespace DevCassio
                     }
                 }
 
-                if (allMinionsW.Count > 0)
+                if (allMinionsW.Any())
                 {
                     var farmAll = W.GetCircularFarmLocation(allMinionsW, W.Width * 0.8f);
                     if (farmAll.MinionsHit >= 2 || allMinionsW.Count == 1)
@@ -378,12 +382,14 @@ namespace DevCassio
                     {
                         if (UseELastHitLaneClear)
                         {
-                            if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.9d > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
-                                E.CastOnUnit(minion, packetCast);
+                            if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.85 > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
+                            {
+                                CastE(minion);
+                            }
                         }
                         else if (Player.GetManaPerc() >= LaneClearMinMana)
                         {
-                            E.CastOnUnit(minion, packetCast);
+                            CastE(minion);
                         }
                     }
                 }
@@ -403,7 +409,7 @@ namespace DevCassio
         {
             MinionList = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
 
-            if (MinionList.Count == 0)
+            if (!MinionList.Any())
                 return;
 
             var packetCast = Config.Item("PacketCast").GetValue<bool>();
@@ -417,9 +423,9 @@ namespace DevCassio
 
                     if (E.IsReady() && buffEndTime > (Game.Time + E.Delay) && minion.IsValidTarget(E.Range))
                     {
-                        if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.9d > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
+                        if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.85 > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
                         {
-                            E.CastOnUnit(minion, packetCast);
+                            CastE(minion);
                         }
                     }
                 }
@@ -431,7 +437,7 @@ namespace DevCassio
         {
             var mobs = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            if (mobs.Count == 0)
+            if (!mobs.Any())
                 return;
 
             var UseQJungleClear = Config.Item("UseQJungleClear").GetValue<bool>();
@@ -447,7 +453,7 @@ namespace DevCassio
 
             if (UseEJungleClear && E.IsReady() && mob.HasBuffOfType(BuffType.Poison) && mob.IsValidTarget(E.Range))
             {
-                E.CastOnUnit(mob, packetCast);
+                CastE(mob);
             }
         }
 
@@ -465,6 +471,28 @@ namespace DevCassio
                         R.Cast(eTarget.ServerPosition, packetCast);
                     }
                 }
+            }
+        }
+
+        public static void CastE(Obj_AI_Base unit)
+        {
+            var packetCast = Config.Item("PacketCast").GetValue<bool>();
+            var PlayLegit = Config.Item("PlayLegit").GetValue<bool>();
+            var DisableNFE = Config.Item("DisableNFE").GetValue<bool>();
+            var LegitCastDelay = Config.Item("LegitCastDelay").GetValue<Slider>().Value;
+
+            if (PlayLegit && DisableNFE)
+                packetCast = false;
+
+            if (PlayLegit && DateTime.Now > dtLastECast.AddMilliseconds(LegitCastDelay))
+            {
+                E.CastOnUnit(unit, packetCast);
+                dtLastECast = DateTime.Now;
+            }
+            else
+            {
+                E.CastOnUnit(unit, packetCast);
+                dtLastECast = DateTime.Now;
             }
         }
 
@@ -520,7 +548,7 @@ namespace DevCassio
         static void AssemblyUtil_onGetVersionCompleted(OnGetVersionCompletedArgs args)
         {
             if (args.LastAssemblyVersion == Assembly.GetExecutingAssembly().GetName().Version.ToString())
-                Game.PrintChat(string.Format("<font color='#fb762d'>Dev铔囧コ鏈€寰岀増鏈</font>"));
+                Game.PrintChat(string.Format("<font color='#fb762d'>DevCassio You have the lastest version.</font>"));
             else
                 Game.PrintChat(string.Format("<font color='#fb762d'>DevCassio NEW VERSION available! Tap F8 for Update! {0}</font>", args.LastAssemblyVersion));
         }
@@ -720,62 +748,67 @@ namespace DevCassio
             SimpleTs.AddToMenu(targetSelectorMenu);
             Config.AddSubMenu(targetSelectorMenu);
 
-            Config.AddSubMenu(new Menu("璧扮爫", "Orbwalking"));
+            Config.AddSubMenu(new Menu("璧扮爫閫夐」", "Orbwalking"));
             Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
 
-            Config.AddSubMenu(new Menu("杩炴嫑", "Combo"));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "浣跨敤Q").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "浣跨敤W").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "浣跨敤E").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "浣跨敤R").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤Ignite").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseAACombo", "浣跨敤AA").SetValue(true));
+            Config.AddSubMenu(new Menu("杩炴嫑閫夐」", "Combo"));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "浣跨敤 Q").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "浣跨敤 W").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "浣跨敤 E").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "浣跨敤 R").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤鐐圭噧").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseAACombo", "浣跨敤 AA").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRSaveYourself", "浣跨敤R淇濆懡").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRSaveYourselfMinHealth", "浣跨敤R鐢熷懡鍊").SetValue(new Slider(25, 0, 100)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseRSaveYourselfMinHealth", "浣跨敤 R 鐢熷懡鍊%").SetValue(new Slider(25, 0, 100)));
 
-            Config.AddSubMenu(new Menu("楠氭壈", "Harass"));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "浣跨敤Q").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseWHarass", "浣跨敤W").SetValue(false));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "浣跨敤E").SetValue(true));
-            
+            Config.AddSubMenu(new Menu("楠氭壈閫夐」", "Harass"));
+            Config.SubMenu("Harass").AddItem(new MenuItem("HarassToggle", "楠氭壈 (鑷姩)").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Toggle)));
+            Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "浣跨敤 Q").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("UseWHarass", "浣跨敤 W").SetValue(false));
+            Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "浣跨敤 E").SetValue(true));
 
-            Config.AddSubMenu(new Menu("鍐荤粨", "Freeze"));
-            Config.SubMenu("Freeze").AddItem(new MenuItem("UseEFreeze", "浣跨敤E").SetValue(true));
+            Config.AddSubMenu(new Menu("鎺у埗", "Freeze"));
+            Config.SubMenu("Freeze").AddItem(new MenuItem("UseEFreeze", "浣跨敤 E").SetValue(true));
 
             Config.AddSubMenu(new Menu("娓呯嚎", "LaneClear"));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "浣跨敤Q").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "浣跨敤W").SetValue(false));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELaneClear", "浣跨敤E").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELastHitLaneClear", "浣跨敤E琛ュ垁").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("LaneClearMinMana", "娓呯嚎钃濋噺").SetValue(new Slider(25, 0, 100)));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "浣跨敤 Q").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "浣跨敤 W").SetValue(false));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELaneClear", "浣跨敤 E").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELastHitLaneClear", "浣跨敤 E 灏惧垁").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("LaneClearMinMana", "娓呯嚎钃濋噺 %").SetValue(new Slider(25, 0, 100)));
 
-            Config.AddSubMenu(new Menu("娓呴噹", "JungleClear"));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("UseQJungleClear", "浣跨敤Q").SetValue(true));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("UseEJungleClear", "浣跨敤E").SetValue(true));
+            Config.AddSubMenu(new Menu("鎵撻噹閫夐」", "JungleClear"));
+            Config.SubMenu("JungleClear").AddItem(new MenuItem("UseQJungleClear", "浣跨敤 Q").SetValue(true));
+            Config.SubMenu("JungleClear").AddItem(new MenuItem("UseEJungleClear", "浣跨敤 E").SetValue(true));
 
-            Config.AddSubMenu(new Menu("Gapcloser", "Gapcloser"));
-            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RAntiGapcloser", "R AntiGapcloser").SetValue(true));
-            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RInterrupetSpell", "R InterruptSpell").SetValue(true));
-            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RAntiGapcloserMinHealth", "R AntiGapcloser Min Health").SetValue(new Slider(60, 0, 100)));
+            Config.AddSubMenu(new Menu("杩戣韩閫夐」", "Gapcloser"));
+            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RAntiGapcloser", "浣跨敤 R 闃茶繎韬珅").SetValue(true));
+            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RInterrupetSpell", "R 鎵撴柇鎶€鑳絴").SetValue(true));
+            Config.SubMenu("Gapcloser").AddItem(new MenuItem("RAntiGapcloserMinHealth", "浣跨敤 R 琛€閲%").SetValue(new Slider(60, 0, 100)));
 
             Config.AddSubMenu(new Menu("鏉傞」", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "浣跨敤灏佸寘").SetValue(true));
 
+            Config.AddSubMenu(new Menu("鎴戞槸鍚堟硶鐨 :)", "Legit"));
+            Config.SubMenu("Legit").AddItem(new MenuItem("PlayLegit", "鍚堟硶娓告垙 :)").SetValue(false));
+            Config.SubMenu("Legit").AddItem(new MenuItem("DisableNFE", "鍏抽棴灏佸寘").SetValue(true));
+            Config.SubMenu("Legit").AddItem(new MenuItem("LegitCastDelay", "E寤舵椂").SetValue(new Slider(500, 0, 1000)));
+
             Config.AddSubMenu(new Menu("澶ф嫑閫夐」", "Ultimate"));
             Config.SubMenu("Ultimate").AddItem(new MenuItem("UseAssistedUlt", "澶ф嫑鍔╂墜").SetValue(true));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("AssistedUltKey", "鍔╂墜蹇嵎閿").SetValue((new KeyBind("R".ToCharArray()[0], KeyBindType.Press))));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("BlockUlt", "缁堟澶ф嫑").SetValue(true));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("UseUltUnderTower", "鏁屾柟濉斾笅浣跨敤R").SetValue(true));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("UltRange", "R璺濈").SetValue(new Slider(700, 0, 850)));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("RMinHit", "浣跨敤R鏁屼汉鏁").SetValue(new Slider(2, 1, 5)));
-            Config.SubMenu("Ultimate").AddItem(new MenuItem("RMinHitFacing", "闈㈡湞鑷繁鏁伴噺").SetValue(new Slider(1, 1, 5)));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("AssistedUltKey", "蹇嵎閿畖").SetValue((new KeyBind("R".ToCharArray()[0], KeyBindType.Press))));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("BlockUlt", "鍋滅敤澶ф嫑").SetValue(true));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("UseUltUnderTower", "鏁屼汉濉斾笅 R").SetValue(true));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("UltRange", "澶ф嫑鑼冨洿").SetValue(new Slider(700, 0, 850)));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("RMinHit", "澶ф嫑鏁屼汉鏁皘").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Ultimate").AddItem(new MenuItem("RMinHitFacing", "澶ф嫑闈㈡湞鏁屼汉鏁皘").SetValue(new Slider(1, 1, 5)));
 
-            Config.AddSubMenu(new Menu("鑼冨洿閫夐」", "Drawings"));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q鑼冨洿").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("EDamage", "琛€鏉℃樉绀E浼ゅ").SetValue(true));
+            Config.AddSubMenu(new Menu("鏄剧ず閫夐」", "Drawings"));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q 鑼冨洿").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("EDamage", "E鐨勪激瀹硘").SetValue(true));
 
             skinManager.AddToMenu(ref Config);
 
