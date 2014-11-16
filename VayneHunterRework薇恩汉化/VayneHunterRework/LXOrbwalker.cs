@@ -62,9 +62,9 @@ namespace VayneHunterRework
 
             Menu = menu;
 
-            var menuDrawing = new Menu("鏄剧ず", "lxOrbwalker_Draw");
-            menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_AARange", "AA鑼冨洿").SetValue(new Circle(true, Color.FloralWhite)));
-            menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_AARange_Enemy", "鏁屼汉AA鑼冨洿").SetValue(new Circle(true, Color.Pink)));
+            var menuDrawing = new Menu("Drawing", "lxOrbwalker_Draw");
+            menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_AARange", "AA Circle").SetValue(new Circle(true, Color.FloralWhite)));
+            menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_AARange_Enemy", "AA Circle Enemy").SetValue(new Circle(true, Color.Pink)));
             menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_Holdzone", "Holdzone").SetValue(new Circle(true, Color.FloralWhite)));
             menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_MinionHPBar", "Minion HPBar").SetValue(new Circle(true, Color.Black)));
             menuDrawing.AddItem(new MenuItem("lxOrbwalker_Draw_MinionHPBar_thickness", "^ HPBar Thickness").SetValue(new Slider(1, 1, 3)));

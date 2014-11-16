@@ -23,7 +23,7 @@ namespace VayneHunterRework
                     VayneHunterRework.Menu.SubMenu("QSSSpell")
                         .AddItem(new MenuItem("onlyK" + spell.SpellBuff, spell.SpellName + " if killed by it?").SetValue(spell.onlyKill));
                     VayneHunterRework.Menu.SubMenu("QSSSpell").AddItem(new MenuItem("Spacer" + spell.SpellBuff, " "));
-                }
+                }//
             }
             
         }
@@ -39,7 +39,7 @@ namespace VayneHunterRework
             VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("supression", "鍘嬪埗").SetValue(true));
             VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("polymorph", "鍙樺舰").SetValue(true));
             VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("blind", "鑷寸洸").SetValue(false));
-            VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("slow", "鍑忛€").SetValue(false));
+            VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("slow", "鍑忛€焲").SetValue(false));
             VayneHunterRework.Menu.SubMenu("QSST").AddItem(new MenuItem("poison", "涓瘨").SetValue(false));
         }
 
@@ -88,7 +88,14 @@ namespace VayneHunterRework
                 if (VayneHunterRework.isMenuEnabled("en" + cc.buffName))
                 {
                     Console.WriteLine("Should Cleanse. " + cc.buffName + " cause it is a spell");
-                    Cleanse();
+                    if (cc.buffName == "zedulttargetmark")
+                    {
+                        Utility.DelayAction.Add(500, () => Cleanse());
+                    }
+                    else
+                    {
+                        Cleanse();
+                    }
                 }
                 if (VayneHunterRework.isMenuEnabled("onlyK" + cc.buffName) && cc.willKillMe)
                 {

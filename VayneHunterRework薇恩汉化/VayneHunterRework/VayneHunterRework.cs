@@ -33,8 +33,8 @@ namespace VayneHunterRework
         {
             if (Player.ChampionName != charName) return;
             Cleanser.CreateQSSSpellList();
-            Menu = new Menu("Vayne鐚庢墜", "VHRework", true);
-            var lxMenu = new Menu("璧扮爫閫夐」", "LXOrb");
+            Menu = new Menu("鏆楀鐚庢墜-钖囨仼", "VHRework", true);
+            var lxMenu = new Menu("璧扮爫", "LXOrb");
             //LXOrbwalker.AddToMenu(lxMenu);
             COrbwalker = new Orbwalking.Orbwalker(lxMenu);
             Menu.AddSubMenu(lxMenu);
@@ -42,64 +42,66 @@ namespace VayneHunterRework
             SimpleTs.AddToMenu(tsMenu);
             Menu.AddSubMenu(tsMenu);
             Menu.AddSubMenu(new Menu("杩炴嫑閫夐」", "Combo"));
-            Menu.SubMenu("Combo").AddItem(new MenuItem("UseQC", "浣跨敤Q")).SetValue(true);
-            Menu.SubMenu("Combo").AddItem(new MenuItem("UseEC", "浣跨敤E").SetValue(true));
-            Menu.SubMenu("Combo").AddItem(new MenuItem("UseRC", "浣跨敤R").SetValue(false));
-            Menu.SubMenu("Combo").AddItem(new MenuItem("QManaC", "Q钃濋噺%").SetValue(new Slider(35, 1, 100)));
-            Menu.SubMenu("Combo").AddItem(new MenuItem("EManaC", "E钃濋噺%").SetValue(new Slider(20, 1, 100)));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("UseQC", "浣跨敤 Q")).SetValue(true);
+            Menu.SubMenu("Combo").AddItem(new MenuItem("UseEC", "浣跨敤 E").SetValue(true));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("UseRC", "浣跨敤 R").SetValue(false));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("QManaC", "浣跨敤 Q 钃濋噺 %").SetValue(new Slider(35, 1, 100)));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("EManaC", "浣跨敤 E 钃濋噺 %").SetValue(new Slider(20, 1, 100)));
 
             Menu.AddSubMenu(new Menu("楠氭壈閫夐」", "Harrass"));
-            Menu.SubMenu("Harrass").AddItem(new MenuItem("UseQH", "浣跨敤Q")).SetValue(true);
-            Menu.SubMenu("Harrass").AddItem(new MenuItem("UseEH", "浣跨敤E").SetValue(true));
-           // Menu.SubMenu("Harrass").AddItem(new MenuItem("3RdE", "绗笁涓E").SetValue(true));
-            Menu.SubMenu("Harrass").AddItem(new MenuItem("QManaH", "Q钃濋噺%").SetValue(new Slider(35, 1, 100)));
-            Menu.SubMenu("Harrass").AddItem(new MenuItem("EManaH", "E钃濋噺%").SetValue(new Slider(20, 1, 100)));
+            Menu.SubMenu("Harrass").AddItem(new MenuItem("UseQH", "浣跨敤 Q")).SetValue(true);
+            Menu.SubMenu("Harrass").AddItem(new MenuItem("UseEH", "浣跨敤 E").SetValue(true));
+           // Menu.SubMenu("Harrass").AddItem(new MenuItem("3RdE", "AA涓夋E").SetValue(true));
+            Menu.SubMenu("Harrass").AddItem(new MenuItem("QManaH", "浣跨敤 Q 钃濋噺 %").SetValue(new Slider(35, 1, 100)));
+            Menu.SubMenu("Harrass").AddItem(new MenuItem("EManaH", "浣跨敤 E 钃濋噺 %").SetValue(new Slider(20, 1, 100)));
             Menu.AddSubMenu(new Menu("琛ュ叺閫夐」", "Farm"));
-            Menu.SubMenu("Farm").AddItem(new MenuItem("UseQLH", "浣跨敤Q灏惧垁")).SetValue(true);
-            Menu.SubMenu("Farm").AddItem(new MenuItem("UseQLC", "浣跨敤Q娓呯嚎")).SetValue(true);
-            Menu.SubMenu("Farm").AddItem(new MenuItem("QManaLH", "Q钃濋噺% LH").SetValue(new Slider(35, 1, 100)));
-            Menu.SubMenu("Farm").AddItem(new MenuItem("QManaLC", "Q钃濋噺% LC").SetValue(new Slider(35, 1, 100)));
-            Menu.AddSubMenu(new Menu("鏉傞」", "Misc"));
+            Menu.SubMenu("Farm").AddItem(new MenuItem("UseQLH", "浣跨敤 Q 灏惧垁")).SetValue(true);
+            Menu.SubMenu("Farm").AddItem(new MenuItem("UseQLC", "浣跨敤 Q 娓呯嚎")).SetValue(true);
+            Menu.SubMenu("Farm").AddItem(new MenuItem("QManaLH", "浣跨敤 Q 钃濋噺 % LH").SetValue(new Slider(35, 1, 100)));
+            Menu.SubMenu("Farm").AddItem(new MenuItem("QManaLC", "浣跨敤 Q 钃濋噺 % LC").SetValue(new Slider(35, 1, 100)));
+            Menu.AddSubMenu(new Menu("鍏朵粬閫夐」", "Misc"));
             Menu.SubMenu("Misc").AddItem(new MenuItem("Packets", "浣跨敤灏佸寘").SetValue(true));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("AntiGP", "鍙嶉绛")).SetValue(true);
+            Menu.SubMenu("Misc").AddItem(new MenuItem("AntiGP", "鏀鹃绛潀")).SetValue(true);
             Menu.SubMenu("Misc").AddItem(new MenuItem("Interrupt", "鎵撴柇").SetValue(true));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("SmartQ", "QE璧锋墜").SetValue(false));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("ENext", "鑷姩E").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("PushDistance", "E璺濈").SetValue(new Slider(425, 400, 500)));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("CondemnTurret", "E鍒伴槻寰″笅").SetValue(true));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "鑷姩E").SetValue(false));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("NoEEnT", "No E Under濉斾笅").SetValue(true));
-            Menu.SubMenu("Misc").AddItem(new MenuItem("WallTumble", "鑷姩绌垮").SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Press)));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("SmartQ", "棣栧厛浣跨敤 QE").SetValue(false));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("ENext", "鑷姩E 鎸夐敭").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("PushDistance", "E 鑼冨洿").SetValue(new Slider(425, 400, 500)));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("CondemnTurret", "E鍒板涓媩").SetValue(true));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "鑷姩 E").SetValue(false));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("NoEEnT", "鏁屾柟濉斾笅涓岴").SetValue(true));
+            Menu.SubMenu("Misc").AddItem(new MenuItem("WallTumble", "缈诲").SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Press)));
             Menu.SubMenu("Misc").AddItem(new MenuItem("ThreshLantern", "鑷姩鐏").SetValue(new KeyBind("S".ToCharArray()[0], KeyBindType.Press)));
-            Menu.AddSubMenu(new Menu("鑽変笡閫夐」", "BushReveal"));
-            //Menu.SubMenu("BushReveal").AddItem(new MenuItem("BushReveal", "Bush Revealer").SetValue(new KeyBind("Z".ToCharArray()[0], KeyBindType.Toggle)));
-            Menu.SubMenu("BushReveal").AddItem(new MenuItem("BushRevealer", "鑷姩鎺㈢溂").SetValue(true));
+            Menu.AddSubMenu(new Menu("鑽変笡鍔╂墜", "BushReveal"));
+            //Menu.SubMenu("BushReveal").AddItem(new MenuItem("BushReveal", "鑽変笡鍔╂墜").SetValue(new KeyBind("Z".ToCharArray()[0], KeyBindType.Toggle)));
+            Menu.SubMenu("BushReveal").AddItem(new MenuItem("BushRevealer", "浣跨敤楗板搧").SetValue(true));
             Menu.AddSubMenu(new Menu("閬撳叿閫夐」", "Items"));
-            Menu.SubMenu("Items").AddItem(new MenuItem("BotrkC", "杩炴嫑浣跨敤鐮磋触").SetValue(true));
-            Menu.SubMenu("Items").AddItem(new MenuItem("BotrkH", "楠氭壈浣跨敤鐮磋触").SetValue(false));
-            Menu.SubMenu("Items").AddItem(new MenuItem("YoumuuC", "杩炴嫑浣跨敤骞芥ⅵ").SetValue(true));
-            Menu.SubMenu("Items").AddItem(new MenuItem("YoumuuH", "楠氭壈浣跨敤骞芥ⅵ").SetValue(false));
-            Menu.SubMenu("Items").AddItem(new MenuItem("OwnHPercBotrk", "鐮磋触鐢熷懡%").SetValue(new Slider(50, 1, 100)));
-            Menu.SubMenu("Items").AddItem(new MenuItem("EnHPercBotrk", "鐮磋触鏁屼汉%").SetValue(new Slider(20, 1, 100)));
+            Menu.SubMenu("Items").AddItem(new MenuItem("BotrkC", "杩炴嫑 浣跨敤 鐮磋触").SetValue(true));
+            Menu.SubMenu("Items").AddItem(new MenuItem("BotrkH", "楠氭壈 浣跨敤 鐮磋触").SetValue(false));
+            Menu.SubMenu("Items").AddItem(new MenuItem("YoumuuC", "杩炴嫑 浣跨敤 骞介瓊").SetValue(true));
+            Menu.SubMenu("Items").AddItem(new MenuItem("YoumuuH", "楠氭壈 浣跨敤 骞介瓊").SetValue(false));
+            Menu.SubMenu("Items").AddItem(new MenuItem("BilgeC", "杩炴嫑 浣跨敤 寮垁").SetValue(true));
+            Menu.SubMenu("Items").AddItem(new MenuItem("BilgeH", "楠氭壈 浣跨敤 寮垁").SetValue(false));
+            Menu.SubMenu("Items").AddItem(new MenuItem("OwnHPercBotrk", "鐮磋触 鐢熷懡鍊%").SetValue(new Slider(50, 1, 100)));
+            Menu.SubMenu("Items").AddItem(new MenuItem("EnHPercBotrk", "鏁屼汉 鐢熷懡鍊%").SetValue(new Slider(20, 1, 100)));
 
-            Menu.AddSubMenu(new Menu("瑙ｆ帶閫夐」", "QSSMenu"));
-           Menu.SubMenu("QSSMenu").AddItem(new MenuItem("UseQSS", "鑷姩瑙ｆ帶").SetValue(true));
-            Menu.AddSubMenu(new Menu("瑙ｆ帶BUFF", "QSST"));
+            Menu.AddSubMenu(new Menu("鍑€鍖栭€夐」", "QSSMenu"));
+           Menu.SubMenu("QSSMenu").AddItem(new MenuItem("UseQSS", "浣跨敤|鍑€鍖東").SetValue(true));
+            Menu.AddSubMenu(new Menu("鍑€鍖東Buff|绫诲瀷", "QSST"));
             Cleanser.CreateTypeQSSMenu();
-            Menu.AddSubMenu(new Menu("瑙ｆ帶SPELLS", "QSSSpell"));
+            Menu.AddSubMenu(new Menu("鍑€鍖栨妧鑳絴", "QSSSpell"));
             Cleanser.CreateQSSSpellMenu();
-            Menu.AddSubMenu(new Menu("鍒敤E", "NoCondemn"));
+            Menu.AddSubMenu(new Menu("涓嶄娇鐢▅E|鎶€鑳絴", "NoCondemn"));
             CreateNoCondemnMenu();
             /**
-            Menu.AddSubMenu(new Menu("[VH] AutoLeveler", "AutoLevel"));
-            Menu.SubMenu("AutoLevel").AddItem(new MenuItem("ALSeq", "AutoLevel Seq").SetValue(new StringList(new []{"Q,W,E Max W,Q,E","Q,E,W Max Q,W,E"},0)));
-            Menu.SubMenu("AutoLevel").AddItem(new MenuItem("ALAct", "AutoLevel Active").SetValue(false));
+            Menu.AddSubMenu(new Menu("鑷姩鍔犵偣", "AutoLevel"));
+            Menu.SubMenu("AutoLevel").AddItem(new MenuItem("ALSeq", "鑷姩鍔犵偣").SetValue(new StringList(new []{"Q,W,E Max W,Q,E","Q,E,W Max Q,W,E"},0)));
+            Menu.SubMenu("AutoLevel").AddItem(new MenuItem("ALAct", "鎵撳紑").SetValue(false));
              * */
             Menu.AddSubMenu(new Menu("鏄剧ず閫夐」", "Draw"));
-            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawE", "E鑼冨洿").SetValue(new Circle(true,Color.MediumPurple)));
-            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawCond", "Draw Pos. Aft. E if Stun").SetValue(new Circle(true, Color.Red)));
-            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawDrake", "Draw Drake Spot").SetValue(new Circle(true, Color.WhiteSmoke)));
-            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawMid", "Draw Mid Spot").SetValue(new Circle(true, Color.WhiteSmoke)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawE", "E 鑼冨洿").SetValue(new Circle(true,Color.MediumPurple)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawCond", "鏄剧ず E 鏅曠湬").SetValue(new Circle(true, Color.Red)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawDrake", "鏄剧ず Drake Spot").SetValue(new Circle(true, Color.WhiteSmoke)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawMid", "鏄剧ず Mid Spot").SetValue(new Circle(true, Color.WhiteSmoke)));
             Menu.AddToMainMenu();
             Game.PrintChat("<font color='#FF0000'>VayneHunter</font> <font color='#FFFFFF'>Rework loaded!</font>");
             Game.PrintChat("By <font color='#FF0000'>DZ</font><font color='#FFFFFF'>191</font>. Special Thanks to: Kurisuu");
@@ -251,6 +253,9 @@ namespace VayneHunterRework
 
         void QFarmCheck()
         {
+           // if (COrbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LastHit ||
+           //     COrbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear ||
+           //     COrbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed) return; //Tempfix
             if (!Q.IsReady()) return;
             var PosAfterQ = Player.Position.To2D().Extend(Game.CursorPos.To2D(), 300);
             var minList =
@@ -397,6 +402,14 @@ namespace VayneHunterRework
             if (Menu.Item("YoumuuH").GetValue<bool>() && COrbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
             {
                 UseItem(3142);
+            }
+            if (Menu.Item("BilgeC").GetValue<bool>() && COrbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                UseItem(3144,tar);
+            }
+            if (Menu.Item("BilgeH").GetValue<bool>() && COrbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            {
+                UseItem(3144, tar);
             }
         }
         void WallTumble()

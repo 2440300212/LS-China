@@ -1,0 +1,82 @@
+
+        enum InsecComboStepSelect { NONE, QGAPCLOSE, WGAPCLOSE, PRESSR };
+        static InsecComboStepSelect InsecComboStep;
+        static void InsecCombo(Obj_AI_Hero target)
+        {
+            Vector3 insecPosition = InterceptionPoint(GetAllyInsec(GetAllyHeroes(target, 2000)));
+            switch (InsecComboStep)
+            {
+                case InsecComboStepSelect.QGAPCLOSE:
+                    if (!HasBuff(target, "QBuffNamePl0x"))
+                    {
+                        PredictionOutput pred = Q.GetPrediction(target);
+                        if (pred.Hitchance == HitChance.High)
+                            Q.Cast(pred.CastPosition);
+                    }
+                    else
+                    {
+                        Q.Cast();
+                        InsecComboStep = InsecComboStepSelect.WGAPCLOSE;
+                    }
+                    break;
+                case InsecComboStepSelect.WGAPCLOSE:
+                    WardJump(V2E(target.Position, insecPosition, target.Distance(insecPosition) + 200).To3D());
+                    break;
+                case InsecComboStepSelect.PRESSR:
+                    R.Cast(target);
+                    break;
+            }
+        }
+
+        static Vector3 InterceptionPoint(List<Obj_AI_Hero> heroes)
+        {
+            Vector3 result = new Vector3();
+            foreach (Obj_AI_Hero hero in heroes)
+                result += hero.Position;
+            result.X /= heroes.Count;
+            result.Y /= heroes.Count;
+            return result;
+        }
+
+        static List<Obj_AI_Hero> GetAllyInsec(List<Obj_AI_Hero> heroes)
+        {
+            byte alliesAround = 0;
+            Obj_AI_Hero tempObject = new Obj_AI_Hero();
+            foreach (Obj_AI_Hero hero in heroes)
+            {
+                int localTemp = GetAllyHeroes(hero, 500).Count;
+                if (localTemp > alliesAround)
+                {
+                    tempObject = hero;
+                    alliesAround = (byte)localTemp;
+                }
+            }
+            return GetAllyHeroes(tempObject, 500);
+        }
+
+        static List<Obj_AI_Hero> GetAllyHeroes(Obj_AI_Hero position, int range)
+        {
+            List<Obj_AI_Hero> temp = new List<Obj_AI_Hero>();
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
+                if (hero.IsAlly && !hero.IsMe && hero.Distance(position) < range)
+                    temp.Add(hero);
+            return temp;
+        }
+        static bool HasBuff(Obj_AI_Base target, string buffName)
+        {
+            foreach (BuffInstance buff in target.Buffs)
+                if (buff.Name == buffName) return true;
+            return false;
+        }
+        static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
+        {
+            return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
+        }
+        static void OnCast(LeagueSharp.Obj_AI_Base sender, LeagueSharp.GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe) return;            
+            if(args.SData.Name == "LeeSinR <- what is this name?")
+                InsecComboStep = InsecComboStepSelect.NONE;
+            if (args.SData.Name == "LeeSinW <- what is this name?" && InsecComboStep != InsecComboStepSelect.NONE)
+                InsecComboStep = InsecComboStepSelect.PRESSR;
+        }
