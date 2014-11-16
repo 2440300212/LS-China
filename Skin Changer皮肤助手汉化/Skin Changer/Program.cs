@@ -121,7 +121,7 @@ namespace Skin_Changer
             numSkins.Add("Sivir", 6);
             numSkins.Add("Skarner", 2);
             numSkins.Add("Sona", 5);
-            numSkins.Add("Soraka", 3);
+            numSkins.Add("Soraka", 4);
             numSkins.Add("Swain", 3);
             numSkins.Add("Syndra", 2);
             numSkins.Add("Talon", 3);
@@ -155,7 +155,7 @@ namespace Skin_Changer
             numSkins.Add("Zyra", 3);
 
             Config = new Menu("皮肤助手", "SkinChanger", true);
-            var ChangeSkin = Config.AddItem(new MenuItem("CycleSkins", "快捷�").SetValue(new KeyBind("9".ToCharArray()[0], KeyBindType.Toggle)));
+            var ChangeSkin = Config.AddItem(new MenuItem("CycleSkins", "快捷�!").SetValue(new KeyBind("9".ToCharArray()[0], KeyBindType.Toggle)));
            
             
             ChangeSkin.ValueChanged += delegate(object sender, OnValueChangeEventArgs EventArgs)

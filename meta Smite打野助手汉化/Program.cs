@@ -27,12 +27,12 @@ namespace meta_Smite
 
         private static void Game_OnGameStart(EventArgs args)
         {
-            Game.PrintChat("姝ｅ湪鍚姩鎯╂垝鍔╂墜");
+            Game.PrintChat("Starting load of Meta Smite");
             setSmiteSlot();
-            Config = new Menu("鎯╂垝鍔╂墜", "metaSmite", true);
+            Config = new Menu("鎵撻噹鍔╂墜", "metaSmite", true);
             Config.AddItem(new MenuItem("Enabled", "鑷姩鎯╂垝").SetValue(new KeyBind("N".ToCharArray()[0], KeyBindType.Toggle, true)));
             Config.AddItem(new MenuItem("EnabledH", "鎸夐敭鎯╂垝").SetValue(new KeyBind("K".ToCharArray()[0], KeyBindType.Press)));
-            //Config.AddItem(new MenuItem("SmiteCast", "浣跨敤灏佸寘鎯╂垝")).SetValue(true);
+            //Config.AddItem(new MenuItem("SmiteCast", "浣跨敤灏佸寘")).SetValue(true);
             Config.AddToMainMenu();
             champSpell = addSupportedChampSkill();
             if (smiteSlot == SpellSlot.Unknown && champSpell.Slot == SpellSlot.Unknown)
@@ -43,7 +43,7 @@ namespace meta_Smite
             setupCampMenu();
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Game.PrintChat("鎯╂垝鍔╂墜杞藉叆鎴愬姛..");
+            Game.PrintChat("Meta Smite by metaphorce Loaded");
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -472,21 +472,29 @@ namespace meta_Smite
 
         public static void setupCampMenu()
         {
-            Config.AddSubMenu(new Menu("Camps", "Camps"));
+            Config.AddSubMenu(new Menu("鎯╂垝鐩爣", "Camps"));
             if(Game.MapId == GameMapId.SummonersRift)
             {
-                Config.SubMenu("Camps").AddItem(new MenuItem("Worm", "Baron Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("Dragon", "Dragon Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("AncientGolem", "Blue Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("LizardElder", "Red Enabled").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("Worm", "鐢风埖").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("Dragon", "灏忛緳").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("AncientGolem", "钃濈埜鐖竱").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("LizardElder", "绾㈢埜鐖竱").SetValue(true));
             }
             if(Game.MapId == GameMapId.TwistedTreeline)
             {
-                Config.SubMenu("Camps").AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NWolf", "Wolf Enabled").SetValue(true));
-                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("TT_Spiderboss", "铚樿洓 Boss").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NGolem", "榄斿儚").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NWolf", "灏忕嫾").SetValue(true));
+                Config.SubMenu("Camps").AddItem(new MenuItem("TT_NWraith", "骞界伒").SetValue(true));
             }
+			//by SKO
+			if (Game.MapId == (GameMapId)11)
+			{
+				Config.SubMenu("Camps").AddItem(new MenuItem("SRU_Baron", "鏂板湴鍥剧敺鐖祙").SetValue(true));
+				Config.SubMenu("Camps").AddItem(new MenuItem("SRU_Dragon", "鏂板湴鍥惧皬榫檤").SetValue(true));
+				Config.SubMenu("Camps").AddItem(new MenuItem("SRU_Blue", "鏂板湴鍥捐摑鐖哥埜").SetValue(true));
+				Config.SubMenu("Camps").AddItem(new MenuItem("SRU_Red", "鏂板湴鍥剧孩鐖哥埜").SetValue(true));
+			}
         }
 
         public static double getQ2Dmg(Obj_AI_Base target)
@@ -526,14 +534,15 @@ namespace meta_Smite
         //Credits to Lizzaran
         private static readonly string[] MinionNames =
         {
-            "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith"
+            "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith",
+            "SRU_Blue", "SRU_Gromp", "SRU_Murkwolf", "SRU_Razorbeak", "SRU_Red", "SRU_Krug", "SRU_Dragon", "SRU_Baron" //by SKO
         };
 
         public static Obj_AI_Minion GetNearest(Vector3 pos)
         {
             var minions =
                 ObjectManager.Get<Obj_AI_Minion>()
-                    .Where(minion => minion.IsValid && MinionNames.Any(name => minion.Name.StartsWith(name)));
+                    .Where(minion => minion.IsValid && MinionNames.Any(name => minion.Name.StartsWith(name)) && !MinionNames.Any(name => minion.Name.Contains("Mini")));
             var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
             Obj_AI_Minion sMinion = objAiMinions.FirstOrDefault();
             double? nearest = null;

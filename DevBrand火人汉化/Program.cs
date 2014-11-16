@@ -202,7 +202,7 @@ namespace DevBrand
             // Passive UP +1 enemy Combo
             var query = DevHelper.GetEnemyList()
                 .Where(x => x.IsValidTarget(R.Range) && HasPassiveBuff(x) && Player.GetSpellDamage(x, SpellSlot.R) > x.Health).OrderBy(x => x.Health);
-            if (query.Count() > 0 && R.IsReady())
+            if (query.Any() && R.IsReady())
             {
                 R.CastOnUnit(query.First(), packetCast);
             }
@@ -338,7 +338,7 @@ namespace DevBrand
             {
                 var allMinionsW = MinionManager.GetMinions(Player.ServerPosition, W.Range + W.Width, MinionTypes.All, MinionTeam.Enemy).ToList();
 
-                if (allMinionsW.Count > 0)
+                if (allMinionsW.Any())
                 {
                     var farm = W.GetCircularFarmLocation(allMinionsW, W.Width * 0.8f);
                     if (farm.MinionsHit >= 2)
@@ -357,9 +357,9 @@ namespace DevBrand
                 var jungleList = MinionManager.GetMinions(Player.Position, E.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth)
                     .Where(x => HasPassiveBuff(x));
 
-                if (jungleList.Count() > 0)
+                if (jungleList.Any())
                     E.CastOnUnit(jungleList.First(), packetCast);
-                else if (minionList.Count() > 0)
+                else if (minionList.Any())
                     E.CastOnUnit(jungleList.First(), packetCast);
             }
 
@@ -380,7 +380,7 @@ namespace DevBrand
                 if (UseQKillSteal && Q.IsReady())
                 {
                     var ksQ = DevHelper.GetEnemyList().Where(x => x.IsValidTarget(Q.Range) && Q.GetDamage(x) > x.Health * 1.1).OrderBy(x => x.Health).ToList();
-                    if (ksQ.Count > 0)
+                    if (ksQ.Any())
                     {
                         var target = ksQ.First();
                         Q.CastIfHitchanceEquals(target, target.IsMoving ? HitChance.High : HitChance.Medium, packetCast);
@@ -390,7 +390,7 @@ namespace DevBrand
                 if (UseWKillSteal && W.IsReady())
                 {
                     var ksW = DevHelper.GetEnemyList().Where(x => x.IsValidTarget(W.Range) && W.GetDamage(x) > x.Health * 1.1).OrderBy(x => x.Health).ToList();
-                    if (ksW.Count > 0)
+                    if (ksW.Any())
                     {
                         var target = ksW.First();
                         W.CastIfHitchanceEquals(target, target.IsMoving ? HitChance.High : HitChance.Medium, packetCast);
@@ -400,7 +400,7 @@ namespace DevBrand
                 if (UseEKillSteal && E.IsReady())
                 {
                     var ksE = DevHelper.GetEnemyList().Where(x => x.IsValidTarget(E.Range) && E.GetDamage(x) > x.Health * 1.1).OrderBy(x => x.Health).ToList();
-                    if (ksE.Count > 0)
+                    if (ksE.Any())
                     {
                         var target = ksE.First();
                         E.CastOnUnit(target, packetCast);
@@ -410,7 +410,7 @@ namespace DevBrand
                 if (UseRKillSteal && R.IsReady())
                 {
                     var ksR = DevHelper.GetEnemyList().Where(x => x.IsValidTarget(R.Range) && R.GetDamage(x) > x.Health * 1.1).OrderBy(x => x.Health).ToList();
-                    if (ksR.Count > 0)
+                    if (ksR.Any())
                     {
                         var target = ksR.First();
                         R.CastOnUnit(target, packetCast);
@@ -511,7 +511,7 @@ namespace DevBrand
 
         private static void InitializeMainMenu()
         {
-            Config = new Menu("Dev鐏汉", "DevBrand", true);
+            Config = new Menu("Dev澶嶄粐鐏劙", "DevBrand", true);
 
             var targetSelectorMenu = new Menu("鐩爣閫夋嫨", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
@@ -525,42 +525,42 @@ namespace DevBrand
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "浣跨敤 W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "浣跨敤 E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "浣跨敤 R").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤鐐圭噧").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRMinEnemies", "浣跨敤R鏁屼汉鏁伴噺").SetValue(new Slider(2, 1, 5)));
-            Config.SubMenu("Combo").AddItem(new MenuItem("PriorizeStunCombo", "浣跨敤Q鏅曠湬").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤 Ignite").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseRMinEnemies", "浣跨敤 R 鏁屼汉鏁皘").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("PriorizeStunCombo", "浣跨敤 Q 鏅曠湬").SetValue(true));
 
             Config.AddSubMenu(new Menu("楠氭壈", "Harass"));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseWHarass", "浣跨敤 W").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "浣跨敤 E").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("PriorizeStunHarass", "浣跨敤Q鏅曠湬").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("PriorizeStunHarass", "浣跨敤 Q 鏅曠湬").SetValue(true));
 
             Config.AddSubMenu(new Menu("娓呯嚎", "LaneClear"));
             //Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "浣跨敤 Q").SetValue(false));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "浣跨敤 W").SetValue(true));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELaneClear", "浣跨敤 E").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("ManaLaneClear", "娓呯嚎钃濋噺%").SetValue(new Slider(30, 1, 100)));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("ManaLaneClear", "钃濋噺 %").SetValue(new Slider(30, 1, 100)));
 
             Config.AddSubMenu(new Menu("鏉傞」", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "浣跨敤灏佸寘").SetValue(true));
 
-            Config.AddSubMenu(new Menu("浜哄ご閫夐」", "KillSteal"));
-            Config.SubMenu("KillSteal").AddItem(new MenuItem("KillSteal", "浜哄ご").SetValue(true));
+            Config.AddSubMenu(new Menu("鎶汉澶磡", "KillSteal"));
+            Config.SubMenu("KillSteal").AddItem(new MenuItem("KillSteal", "鎶汉澶磡").SetValue(true));
             Config.SubMenu("KillSteal").AddItem(new MenuItem("UseQKillSteal", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("KillSteal").AddItem(new MenuItem("UseWKillSteal", "浣跨敤 W").SetValue(true));
             Config.SubMenu("KillSteal").AddItem(new MenuItem("UseEKillSteal", "浣跨敤 E").SetValue(true));
             Config.SubMenu("KillSteal").AddItem(new MenuItem("UseRKillSteal", "浣跨敤 R").SetValue(true));
 
-            Config.AddSubMenu(new Menu("杩戣韩閫夐」", "GapCloser"));
+            Config.AddSubMenu(new Menu("闃茶繎韬, "GapCloser"));
             Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloser", "浣跨敤灞忛殰").SetValue(true));
-            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloserMinHealth", "浣跨敤灞忛殰鐢熷懡%").SetValue(new Slider(40, 0, 100)));
+            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloserMinHealth", "灞忛殰 鐢熷懡鍊%").SetValue(new Slider(40, 0, 100)));
 
             Config.AddSubMenu(new Menu("鏄剧ず", "Drawings"));
             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q 鑼冨洿").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("ComboDamage", "鏄剧ず").SetValue(true));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("ComboDamage", "琛€鏉′笅鏂规樉绀簗").SetValue(true));
 
             skinManager.AddToMenu(ref Config);
 

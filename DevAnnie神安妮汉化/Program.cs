@@ -179,7 +179,7 @@ namespace DevAnnie
                         break;
                     case Orbwalking.OrbwalkingMode.Mixed:
                         Harass();
-                        //QHarassLastHit();
+                        QHarassLastHit();
                         break;
                     case Orbwalking.OrbwalkingMode.LaneClear:
                         WaveClear();
@@ -237,7 +237,7 @@ namespace DevAnnie
 
                 bool isSuicide = FlashAntiSuicide ? allEnemies.Count() - enemies.Count() > 2 : false;
 
-                if (enemies.Count() > 0 && !isSuicide)
+                if (enemies.Any() && !isSuicide)
                 { 
                     var enemy = enemies.First();
                     if (DevHelper.CountEnemyInPositionRange(enemy.ServerPosition, 250) >= FlashComboMinEnemies)
@@ -436,18 +436,21 @@ namespace DevAnnie
 
         public static void QHarassLastHit()
         {
+            if (!IsSupportMode)
+                return;
+
             var UseQHarassLastHit = Config.Item("UseQHarassLastHit").GetValue<bool>();
             var packetCast = Config.Item("PacketCast").GetValue<bool>();
 
             if (UseQHarassLastHit && Q.IsReady() && GetPassiveStacks() < 4)
             {
                 var nearestEnemy = Player.GetNearestEnemy();
-                if (Player.Distance(nearestEnemy) > Q.Range + 100)
+                if (Player.Distance(nearestEnemy) > Q.Range)
                 {
                     var allMinions = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy).ToList();
-                    var minionLastHit = allMinions.Where(x => HealthPrediction.LaneClearHealthPrediction(x, (int)Q.Delay * 1000) < Player.GetSpellDamage(x, SpellSlot.Q) * 0.9f).OrderBy(x => x.Health);
+                    var minionLastHit = allMinions.Where(x => x.Health > Player.GetSpellDamage(x, SpellSlot.Q)).OrderBy(x => x.Health);
 
-                    if (minionLastHit.Count() > 0)
+                    if (minionLastHit.Any())
                     {
                         var unit = minionLastHit.First();
                         Q.CastOnUnit(unit, packetCast);
@@ -468,7 +471,7 @@ namespace DevAnnie
                 var allMinions = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy).ToList();
                 var minionLastHit = allMinions.Where(x => HealthPrediction.LaneClearHealthPrediction(x, (int)Q.Delay * 1000) < Player.GetSpellDamage(x, SpellSlot.Q) * 0.8f).OrderBy(x => x.Health);
 
-                if (minionLastHit.Count() > 0)
+                if (minionLastHit.Any())
                 {
                     var unit = minionLastHit.First();
                     Q.CastOnUnit(unit, packetCast);
@@ -479,7 +482,7 @@ namespace DevAnnie
             {
                 var allMinionsW = MinionManager.GetMinions(Player.ServerPosition, W.Range, MinionTypes.All, MinionTeam.Enemy).ToList();
 
-                if (allMinionsW.Count > 0)
+                if (allMinionsW.Any())
                 {
                     var farm = W.GetCircularFarmLocation(allMinionsW, W.Width * 0.8f);
                     if (farm.MinionsHit >= 3)
@@ -518,7 +521,7 @@ namespace DevAnnie
         public static int GetPassiveStacks()
         {
             var buffs = Player.Buffs.Where(buff => (buff.Name.ToLower() == "pyromania" || buff.Name.ToLower() == "pyromania_particle"));
-            if (buffs.Count() > 0)
+            if (buffs.Any())
             {
                 var buff = buffs.First();
                 if (buff.Name.ToLower() == "pyromania_particle")
@@ -635,7 +638,7 @@ namespace DevAnnie
 
         private static void InitializeMainMenu()
         {
-            Config = new Menu("Dev瀹夊Ξ", "DevAnnie", true);
+            Config = new Menu("Dev榛戞殫涔嬪コ", "DevAnnie", true);
 
             var targetSelectorMenu = new Menu("鐩爣閫夋嫨", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
@@ -645,52 +648,52 @@ namespace DevAnnie
             Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
 
             Config.AddSubMenu(new Menu("妯″紡", "Mode"));
-            Config.SubMenu("Mode").AddItem(new MenuItem("ModeType", "妯″紡").SetValue(new StringList(new[] { "SoloQ", "Support" })));
+            Config.SubMenu("Mode").AddItem(new MenuItem("ModeType", "妯″紡绫诲瀷").SetValue(new StringList(new[] { "SoloQ", "Support" })));
 
             Config.AddSubMenu(new Menu("杩炴嫑", "Combo"));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "浣跨敤 W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "浣跨敤 E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "浣跨敤 R").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤鐐圭噧").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRMinEnemies", "浣跨敤R鏁屼汉鏁伴噺").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "浣跨敤 Ignite").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseRMinEnemies", "浣跨敤 R 鏁屼汉鏁皘").SetValue(new Slider(2, 1, 5)));
 
-            Config.AddSubMenu(new Menu("闂幇R", "FlashCombo"));
-            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashComboKey", "蹇嵎Key").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
-            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashComboMinEnemies", "闂幇R鏁屼汉鏁伴噺").SetValue(new Slider(2, 1, 5)));
-            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashAntiSuicide", "闂幇杩芥潃").SetValue(true));
+            Config.AddSubMenu(new Menu("闂幇杩炴嫑", "FlashCombo"));
+            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashComboKey", "蹇嵎閿").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
+            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashComboMinEnemies", "闂幇杩炴嫑鏁屼汉鏁皘").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("FlashCombo").AddItem(new MenuItem("FlashAntiSuicide", "浣跨敤闂幇闃茶嚜鏉€").SetValue(true));
 
             Config.AddSubMenu(new Menu("楠氭壈", "Harass"));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseWHarass", "浣跨敤 W").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "浣跨敤 E").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarassLastHit", "浣跨敤Q灏惧垁").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarassLastHit", "浣跨敤 Q 灏惧垁").SetValue(true));
 
             Config.AddSubMenu(new Menu("娓呯嚎", "LaneClear"));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "浣跨敤 W").SetValue(false));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("ManaLaneClear", "W钃濋噺%").SetValue(new Slider(30, 1, 100)));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("ManaLaneClear", "W 钃濋噺 %").SetValue(new Slider(30, 1, 100)));
 
-            Config.AddSubMenu(new Menu("鎵撻噹", "JungleClear"));
+            Config.AddSubMenu(new Menu("娓呴噹", "JungleClear"));
             Config.SubMenu("JungleClear").AddItem(new MenuItem("UseQJungleClear", "浣跨敤 Q").SetValue(true));
             Config.SubMenu("JungleClear").AddItem(new MenuItem("UseWJungleClear", "浣跨敤 W").SetValue(true));
 
             Config.AddSubMenu(new Menu("鏉傞」", "Extra"));
             Config.SubMenu("Extra").AddItem(new MenuItem("PacketCast", "浣跨敤灏佸寘").SetValue(true));
-            Config.SubMenu("Extra").AddItem(new MenuItem("UseEAgainstAA", "鑷姩E").SetValue(true));
-            Config.SubMenu("Extra").AddItem(new MenuItem("UseRInterrupt", "浣跨敤R鎵撴柇").SetValue(true));
+            Config.SubMenu("Extra").AddItem(new MenuItem("UseEAgainstAA", "鑷姩 E").SetValue(true));
+            Config.SubMenu("Extra").AddItem(new MenuItem("UseRInterrupt", "浣跨敤 R 鎵撴柇").SetValue(true));
 
-            Config.AddSubMenu(new Menu("杩戣韩閫夐」", "GapCloser"));
-            Config.SubMenu("GapCloser").AddItem(new MenuItem("UseEGapCloser", "鑷姩E").SetValue(true));
-            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloser", "鑷姩灞忛殰").SetValue(true));
-            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloserMinHealth", "鑷姩灞忛殰鐢熷懡%").SetValue(new Slider(40, 0, 100)));
+            Config.AddSubMenu(new Menu("杩戣韩", "GapCloser"));
+            Config.SubMenu("GapCloser").AddItem(new MenuItem("UseEGapCloser", "浣跨敤 E 闃茶繎韬珅").SetValue(true));
+            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloser", "杩戣韩灞忛殰").SetValue(true));
+            Config.SubMenu("GapCloser").AddItem(new MenuItem("BarrierGapCloserMinHealth", "灞忛殰 鐢熷懡鍊%").SetValue(new Slider(40, 0, 100)));
 
             Config.AddSubMenu(new Menu("鏄剧ず", "Drawings"));
             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q 鑼冨洿").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R 鑼冨洿").SetValue(new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("ComboDamage", "鏄剧ず").SetValue(true));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("ComboDamage", "琛€鏉℃樉绀簗").SetValue(true));
 
             skinManager.AddToMenu(ref Config);
 
