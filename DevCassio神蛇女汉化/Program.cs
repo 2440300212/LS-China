@@ -382,7 +382,7 @@ namespace DevCassio
                     {
                         if (UseELastHitLaneClear)
                         {
-                            if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.85 > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
+                            if (Player.GetSpellDamage(minion, SpellSlot.E) * 0.9 > HealthPrediction.LaneClearHealthPrediction(minion, (int)E.Delay * 1000))
                             {
                                 CastE(minion);
                             }
@@ -792,7 +792,7 @@ namespace DevCassio
             Config.AddSubMenu(new Menu("鎴戞槸鍚堟硶鐨 :)", "Legit"));
             Config.SubMenu("Legit").AddItem(new MenuItem("PlayLegit", "鍚堟硶娓告垙 :)").SetValue(false));
             Config.SubMenu("Legit").AddItem(new MenuItem("DisableNFE", "鍏抽棴灏佸寘").SetValue(true));
-            Config.SubMenu("Legit").AddItem(new MenuItem("LegitCastDelay", "E寤舵椂").SetValue(new Slider(500, 0, 1000)));
+            Config.SubMenu("Legit").AddItem(new MenuItem("LegitCastDelay", "E寤舵椂").SetValue(new Slider(500, 0, 1500)));
 
             Config.AddSubMenu(new Menu("澶ф嫑閫夐」", "Ultimate"));
             Config.SubMenu("Ultimate").AddItem(new MenuItem("UseAssistedUlt", "澶ф嫑鍔╂墜").SetValue(true));
