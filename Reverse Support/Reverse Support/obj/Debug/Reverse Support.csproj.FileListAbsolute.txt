@@ -1,0 +1,2 @@
+C:\Users\Dudi\Desktop\Reverse Support\Reverse Support\bin\Release\Reverse Support.exe.config
+C:\Users\Dudi\Documents\GitHub\Lsharp\Reverse Support\Reverse Support\bin\Release\Reverse Support.exe.config

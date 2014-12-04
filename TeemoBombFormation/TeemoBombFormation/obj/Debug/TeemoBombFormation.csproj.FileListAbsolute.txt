@@ -1,0 +1,11 @@
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\TeemoBombFormation.exe.config
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\TeemoBombFormation.exe
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\TeemoBombFormation.pdb
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\LeagueSharp.Common.dll
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\LeagueSharp.dll
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\SharpDX.dll
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\bin\Release\LeagueSharp.xml
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\obj\Debug\TeemoBombFormation.csprojResolveAssemblyReference.cache
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\obj\Debug\TeemoBombFormation.exe
+C:\Users\Dudi\Documents\GitHub\Lsharp\TeemoBombFormation\TeemoBombFormation\obj\Debug\TeemoBombFormation.pdb
